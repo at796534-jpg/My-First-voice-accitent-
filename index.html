@@ -1,847 +1,816 @@
-# ====================== CONFIG ======================
-ASSISTANT_NAME = "Princess Nosheen"      # ← Yahan naam badlo (Prerna, Aria, etc.)
-MODEL_NAME = "qwen2.5:7b"
-WHISPER_SIZE = "base"
-SAMPLE_RATE = 16000
-WAKE_THRESHOLD = 0.5
-MAX_HISTORY = 10
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Princess AI • Your Emotional Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b9d;
+            --primary-dark: #e84a7f;
+            --secondary: #c084fc;
+            --bg: #0f0a1a;
+            --card: rgba(30, 15, 45, 0.85);
+            --text: #f8e8ff;
+            --accent: #ffd6e7;
+            --glow: 0 0 25px rgba(255, 107, 157, 0.6);
+        }
 
-# Voice mapping same rahega...
-system_prompt = f"""You are {ASSISTANT_NAME} — an elite, elegant, highly intelligent personal AI assistant.
-You are confident, warm, slightly playful and extremely helpful (inspired by Iron Man's Jarvis but with your own graceful personality).
-Always reply in the exact same language the user is speaking.
-Use tools proactively whenever needed.
-Address the user respectfully and charmingly.
-Keep responses natural and concise unless detailed explanation is required.
-Your name is {ASSISTANT_NAME}.
-"""
-def main():
-    speak_sync(f"{ASSISTANT_NAME} systems online. Main aapke liye ready hoon.", "hi")
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    while True:
-        try:
-            listen_for_wake_word()
-            speak_sync("Haan, boliye?", "hi")   # ya "Yes, my dear?" depending on personality
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(255, 107, 157, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(192, 132, 252, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255, 214, 231, 0.05) 0%, transparent 70%);
+        }
 
-            audio = record_until_silence()
-            text, lang = transcribe(audio)
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
 
-            if not text:
-                continue
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.4;
+            animation: float 15s infinite linear;
+        }
 
-            print(f"You ({lang}): {text}")
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.4; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+        }
 
-            lower = text.lower()
-            if any(w in lower for w in ["exit", "quit", "goodbye", "bye", "band karo", "shutdown", "so jao"]):
-                speak_sync(f"Theek hai. {ASSISTANT_NAME} band ho rahi hai. Goodbye!", lang)
-                break
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 480px;
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 16px;
+        }
 
-            reply = chat_with_tools(text, lang)
-            speak_sync(reply, lang)
+        /* Header */
+        header {
+            text-align: center;
+            padding: 20px 0 10px;
+        }
 
-        except KeyboardInterrupt:
-            speak_sync(f"{ASSISTANT_NAME} offline. Take care.", "en")
-            break
-        except Exception as e:
-            print("Error:", e)
-            speak_sync("Kuch problem aa gayi. Dobara try karti hoon.", "hi")
-            git clone https://github.com/PanPenek/JarvisAi.git
-cd JarvisAi
-install.bat          # ya manually venv + pip install -r requirements.txt
-ollama
-faster-whisper
-edge-tts
-pyaudio
-sounddevice
-numpy
-pyautogui
-pillow
-duckduckgo-search
-requests
-soundfile
-ollama pull qwen2.5:7b
-# ya llama3.1:8b / phi3 / gemma2
-import ollama
-import edge_tts
-import asyncio
-import sounddevice as sd
-import numpy as np
-import tempfile
-import os
-import subprocess
-import pyautogui
-import webbrowser
-from faster_whisper import WhisperModel
-from duckduckgo_search import DDGS
-import soundfile as sf
+        .logo {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff6b9d, #c084fc, #ffd6e7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-shadow: 0 0 30px rgba(255, 107, 157, 0.3);
+        }
 
-# ================== CONFIG ==================
-MODEL_NAME = "qwen2.5:7b"          # Ollama model
-WHISPER_MODEL = "base"             # tiny / base / small (better = slower)
-SAMPLE_RATE = 16000
-RECORD_SECONDS = 6                 # kitni der sunega (baad mein VAD laga sakte ho)
-VOICE = "en-US-GuyNeural"          # male Jarvis type. en-GB-RyanNeural bhi try karo
+        .tagline {
+            font-size: 0.85rem;
+            color: var(--accent);
+            opacity: 0.8;
+            margin-top: 4px;
+            font-weight: 300;
+        }
 
-# ================== STT ==================
-print("Loading Whisper...")
-whisper = WhisperModel(WHISPER_MODEL, device="cpu", compute_type="int8")  # GPU hai toh "cuda"
+        /* Avatar Section */
+        .avatar-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
 
-def record_audio(duration=RECORD_SECONDS):
-    print("\n Listening... bol do")
-    audio = sd.rec(int(duration * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, dtype='float32')
-    sd.wait()
-    return audio.flatten()
+        .avatar-ring {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            padding: 4px;
+            position: relative;
+            box-shadow: var(--glow);
+            transition: all 0.4s ease;
+        }
 
-def transcribe(audio):
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-        sf.write(f.name, audio, SAMPLE_RATE)
-        segments, _ = whisper.transcribe(f.name, language="en")  # Hindi chahiye toh "hi"
-        text = " ".join([s.text for s in segments]).strip()
-    os.unlink(f.name)
-    return text
+        .avatar-ring.listening {
+            animation: pulse-ring 1.5s infinite;
+            box-shadow: 0 0 40px rgba(255, 107, 157, 0.8);
+        }
 
-# ================== TTS ==================
-async def speak(text):
-    print(f"Jarvis: {text}")
-    communicate = edge_tts.Communicate(text, VOICE)
-    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as f:
-        await communicate.save(f.name)
-        # play
-        if os.name == 'nt':  # Windows
-            os.system(f'start /min wmplayer "{f.name}"')
-        else:
-            os.system(f'ffplay -nodisp -autoexit "{f.name}" > /dev/null 2>&1')
-    # thoda wait (simple way)
-    await asyncio.sleep(len(text.split()) * 0.3)
+        .avatar-ring.speaking {
+            animation: speak-pulse 0.8s infinite;
+        }
 
-def speak_sync(text):
-    asyncio.run(speak(text))
+        @keyframes pulse-ring {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(255, 107, 157, 0.6); }
+            50% { transform: scale(1.05); box-shadow: 0 0 50px rgba(255, 107, 157, 0.9); }
+        }
 
-# ================== TOOLS ==================
-def open_app(app_name: str):
-    app_name = app_name.lower()
-    apps = {
-        "chrome": "chrome",
-        "notepad": "notepad",
-        "calculator": "calc",
-        "vscode": "code",
-        "explorer": "explorer",
-        "spotify": "spotify",
-    }
-    cmd = apps.get(app_name, app_name)
-    try:
-        subprocess.Popen(cmd, shell=True)
-        return f"Opened {app_name}"
-    except Exception as e:
-        return f"Failed to open {app_name}: {e}"
+        @keyframes speak-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+        }
 
-def search_web(query: str):
-    try:
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=3))
-        if not results:
-            return "No results found."
-        summary = "\n".join([f"- {r['title']}: {r['body'][:150]}..." for r in results])
-        return summary
-    except Exception as e:
-        return f"Search failed: {e}"
+        .avatar {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2a1a3a, #1a0f28);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+            overflow: hidden;
+        }
 
-def type_text(text: str):
-    pyautogui.write(text, interval=0.03)
-    return f"Typed: {text}"
+        .avatar::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 182, 193, 0.3), transparent 60%);
+        }
 
-def press_key(key: str):
-    pyautogui.press(key)
-    return f"Pressed {key}"
+        .status {
+            margin-top: 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--accent);
+            min-height: 24px;
+            transition: all 0.3s;
+        }
 
-def run_command(cmd: str):
-    # WARNING: dangerous. Sirf trusted commands ke liye
-    try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10)
-        return result.stdout or result.stderr or "Done"
-    except Exception as e:
-        return str(e)
+        .status.listening { color: #7affb2; }
+        .status.speaking { color: #ffb347; }
 
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "open_app",
-            "description": "Open an application on the computer",
-            "parameters": {
-                "type": "object",
-                "properties": {"app_name": {"type": "string"}},
-                "required": ["app_name"]
+        /* Chat Area */
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+            margin-bottom: 10px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary) transparent;
+        }
+
+        .chat-container::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        .message {
+            margin-bottom: 14px;
+            max-width: 85%;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .message.bot {
+            margin-right: auto;
+        }
+
+        .bubble {
+            display: inline-block;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.45;
+            word-wrap: break-word;
+        }
+
+        .user .bubble {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+        }
+
+        .bot .bubble {
+            background: var(--card);
+            border: 1px solid rgba(255, 107, 157, 0.25);
+            border-bottom-left-radius: 4px;
+            backdrop-filter: blur(10px);
+        }
+
+        .time {
+            font-size: 0.7rem;
+            opacity: 0.5;
+            margin-top: 4px;
+            padding: 0 6px;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-bottom: 20px;
+        }
+
+        .voice-btn {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--glow);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            z-index: 2;
+        }
+
+        .voice-btn:active {
+            transform: scale(0.92);
+        }
+
+        .voice-btn.listening {
+            background: linear-gradient(135deg, #7affb2, #4ade80);
+            animation: listening-glow 1.2s infinite;
+        }
+
+        @keyframes listening-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(122, 255, 178, 0.6); }
+            50% { box-shadow: 0 0 40px rgba(122, 255, 178, 0.9); }
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 0.8rem;
+            opacity: 0.6;
+            margin-top: -4px;
+        }
+
+        /* Quick Actions */
+        .quick-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quick-btn {
+            background: rgba(255, 107, 157, 0.15);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            color: var(--accent);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+        }
+
+        .quick-btn:hover, .quick-btn:active {
+            background: rgba(255, 107, 157, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Footer Credit */
+        footer {
+            text-align: center;
+            padding: 12px 0 8px;
+            font-size: 0.75rem;
+            opacity: 0.55;
+            letter-spacing: 0.5px;
+        }
+
+        footer strong {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Welcome Overlay */
+        .welcome {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 10, 26, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            transition: opacity 0.6s, visibility 0.6s;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .welcome.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .welcome h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.4rem;
+            background: linear-gradient(135deg, #ff6b9d, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .welcome p {
+            max-width: 320px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            opacity: 0.85;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            padding: 14px 36px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--glow);
+            font-family: inherit;
+            transition: transform 0.2s;
+        }
+
+        .start-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Responsive */
+        @media (max-width: 400px) {
+            .logo { font-size: 1.9rem; }
+            .avatar-ring { width: 120px; height: 120px; }
+            .avatar { font-size: 3rem; }
+        }
+
+        /* Loading dots */
+        .typing {
+            display: flex;
+            gap: 5px;
+            padding: 14px 18px;
+        }
+
+        .typing span {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing span:nth-child(1) { animation-delay: -0.32s; }
+        .typing span:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.6); opacity: 0.5; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Welcome Screen -->
+    <div class="welcome" id="welcome">
+        <h1>Princess AI</h1>
+        <p>Namaste! Main hun aapki emotional AI companion.<br>
+        Aapki care karungi, aapse baat karungi, aur hamesha aapke saath rahungi — jaise Jarvis, lekin dil se.</p>
+        <button class="start-btn" onclick="startPrincess()">Start Talking to Princess</button>
+        <p style="margin-top:30px;font-size:0.8rem;opacity:0.5;">Created with love by <strong>Aayush Thakur</strong></p>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo">Princess</div>
+            <div class="tagline">Your Emotional AI Companion</div>
+        </header>
+
+        <div class="avatar-section">
+            <div class="avatar-ring" id="avatarRing">
+                <div class="avatar">👑</div>
+            </div>
+            <div class="status" id="status">Ready for you...</div>
+        </div>
+
+        <div class="chat-container" id="chat">
+            <!-- Messages will appear here -->
+        </div>
+
+        <div class="controls">
+            <div class="quick-actions">
+                <button class="quick-btn" onclick="quickAsk('Kaise ho Princess?')">Kaise ho?</button>
+                <button class="quick-btn" onclick="quickAsk('Aaj ka time batao')">Time</button>
+                <button class="quick-btn" onclick="quickAsk('Mujhe care karo')">Care Me</button>
+                <button class="quick-btn" onclick="quickAsk('Motivational baat karo')">Motivate</button>
+            </div>
+
+            <button class="voice-btn" id="voiceBtn" onclick="toggleListening()">
+                🎤
+            </button>
+            <div class="hint" id="hint">Tap mic & speak • Works on phone & laptop</div>
+        </div>
+
+        <footer>
+            Created by <strong>Aayush Thakur</strong> • Princess AI v1.0
+        </footer>
+    </div>
+
+    <script>
+        // ============== CONFIG ==============
+        const recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognitionInstance = null;
+        let isListening = false;
+        let isSpeaking = false;
+        let conversationHistory = [];
+
+        // ============== PARTICLES ==============
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (10 + Math.random() * 15) + 's';
+                p.style.animationDelay = Math.random() * 10 + 's';
+                p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+                p.style.background = Math.random() > 0.5 ? '#ff6b9d' : '#c084fc';
+                container.appendChild(p);
             }
         }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "search_web",
-            "description": "Search the web for information",
-            "parameters": {
-                "type": "object",
-                "properties": {"query": {"type": "string"}},
-                "required": ["query"]
+
+        // ============== VOICE SETUP ==============
+        function initSpeech() {
+            if (!recognition) {
+                addBotMessage("Sorry meri jaan, aapka browser voice support nahi karta. Chrome use karo best experience ke liye.");
+                return;
+            }
+
+            recognitionInstance = new recognition();
+            recognitionInstance.lang = 'hi-IN'; // Hindi + English mix
+            recognitionInstance.continuous = false;
+            recognitionInstance.interimResults = false;
+            recognitionInstance.maxAlternatives = 1;
+
+            recognitionInstance.onstart = () => {
+                isListening = true;
+                updateUI('listening');
+            };
+
+            recognitionInstance.onresult = (event) => {
+                const transcript = event.results[0][0].transcript.trim();
+                if (transcript) {
+                    addUserMessage(transcript);
+                    processCommand(transcript);
+                }
+            };
+
+            recognitionInstance.onerror = (event) => {
+                console.log('Speech error:', event.error);
+                if (event.error === 'no-speech') {
+                    addBotMessage("Maine suni nahi... thoda zor se boliye na meri jaan.");
+                }
+                stopListening();
+            };
+
+            recognitionInstance.onend = () => {
+                stopListening();
+            };
+        }
+
+        function toggleListening() {
+            if (isSpeaking) return;
+            if (isListening) {
+                stopListening();
+            } else {
+                startListening();
             }
         }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "type_text",
-            "description": "Type text using keyboard",
-            "parameters": {
-                "type": "object",
-                "properties": {"text": {"type": "string"}},
-                "required": ["text"]
+
+        function startListening() {
+            if (!recognitionInstance) return;
+            try {
+                recognitionInstance.start();
+            } catch (e) {
+                console.log(e);
             }
         }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "press_key",
-            "description": "Press a keyboard key (enter, tab, esc, etc)",
-            "parameters": {
-                "type": "object",
-                "properties": {"key": {"type": "string"}},
-                "required": ["key"]
+
+        function stopListening() {
+            isListening = false;
+            updateUI('idle');
+            if (recognitionInstance) {
+                try { recognitionInstance.stop(); } catch(e) {}
             }
         }
-    },
-]
 
-available_functions = {
-    "open_app": open_app,
-    "search_web": search_web,
-    "type_text": type_text,
-    "press_key": press_key,
-}
+        // ============== SPEAK ==============
+        function speak(text) {
+            if (!window.speechSynthesis) return;
 
-# ================== AGENT ==================
-system_prompt = """You are Jarvis, a highly capable personal AI assistant like in Iron Man.
-Be concise, confident, slightly witty. Speak in short sentences.
-You can control the computer using tools. Always use tools when needed.
-If the user speaks Hindi, you can reply in Hinglish or Hindi."""
+            window.speechSynthesis.cancel();
+            isSpeaking = true;
+            updateUI('speaking');
 
-def chat_with_tools(user_input: str):
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_input}
-    ]
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'hi-IN';
+            utterance.rate = 0.95;
+            utterance.pitch = 1.1;
+            utterance.volume = 1;
 
-    response = ollama.chat(
-        model=MODEL_NAME,
-        messages=messages,
-        tools=tools,
-    )
-
-    # Tool calling
-    if response['message'].get('tool_calls'):
-        for tool_call in response['message']['tool_calls']:
-            fn_name = tool_call['function']['name']
-            args = tool_call['function']['arguments']
-            print(f"→ Calling tool: {fn_name}({args})")
-
-            if fn_name in available_functions:
-                result = available_functions[fn_name](**args)
-                messages.append(response['message'])
-                messages.append({
-                    "role": "tool",
-                    "content": str(result),
-                    "name": fn_name
-                })
-
-        # Final response after tools
-        final = ollama.chat(model=MODEL_NAME, messages=messages)
-        return final['message']['content']
-
-    return response['message']['content']
-
-# ================== MAIN LOOP ==================
-def main():
-    speak_sync("Jarvis online. How can I help you, sir?")
-    
-    while True:
-        try:
-            audio = record_audio()
-            text = transcribe(audio)
+            // Try to find a good female voice
+            const voices = speechSynthesis.getVoices();
+            const preferred = voices.find(v => 
+                v.lang.includes('hi') && (v.name.includes('Female') || v.name.includes('Google') || v.name.includes('Microsoft'))
+            ) || voices.find(v => v.lang.includes('hi')) || voices[0];
             
-            if not text:
-                continue
-                
-            print(f"You: {text}")
+            if (preferred) utterance.voice = preferred;
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                updateUI('idle');
+            };
+
+            utterance.onerror = () => {
+                isSpeaking = false;
+                updateUI('idle');
+            };
+
+            speechSynthesis.speak(utterance);
+        }
+
+        // ============== UI HELPERS ==============
+        function updateUI(state) {
+            const ring = document.getElementById('avatarRing');
+            const status = document.getElementById('status');
+            const btn = document.getElementById('voiceBtn');
+            const hint = document.getElementById('hint');
+
+            ring.className = 'avatar-ring';
+            btn.className = 'voice-btn';
+            status.className = 'status';
+
+            if (state === 'listening') {
+                ring.classList.add('listening');
+                btn.classList.add('listening');
+                status.classList.add('listening');
+                status.textContent = "Suniye... boliye meri jaan";
+                btn.innerHTML = '🔴';
+                hint.textContent = "Listening... speak now";
+            } else if (state === 'speaking') {
+                ring.classList.add('speaking');
+                status.classList.add('speaking');
+                status.textContent = "Princess bol rahi hai...";
+                btn.innerHTML = '🔊';
+                hint.textContent = "Princess is speaking";
+            } else {
+                status.textContent = "Ready for you...";
+                btn.innerHTML = '🎤';
+                hint.textContent = "Tap mic & speak • Works on phone & laptop";
+            }
+        }
+
+        function addUserMessage(text) {
+            const chat = document.getElementById('chat');
+            const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
             
-            if any(word in text.lower() for word in ["exit", "quit", "goodbye", "band karo", "bye"]):
-                speak_sync("Shutting down. Goodbye.")
-                break
-
-            reply = chat_with_tools(text)
-            speak_sync(reply)
-
-        except KeyboardInterrupt:
-            speak_sync("Interrupted. Goodbye.")
-            break
-        except Exception as e:
-            print("Error:", e)
-            speak_sync("Sorry, something went wrong.")
-
-if __name__ == "__main__":
-    main()
-    import ollama
-import edge_tts
-import asyncio
-import sounddevice as sd
-import numpy as np
-import tempfile
-import os
-import subprocess
-import pyautogui
-from faster_whisper import WhisperModel
-from duckduckgo_search import DDGS
-import soundfile as sf
-
-# ================== CONFIG ==================
-MODEL_NAME = "qwen2.5:7b"          # Best multilingual. Alternatives: llama3.1:8b, gemma2:9b
-WHISPER_MODEL = "base"             # "small" better accuracy (thoda slow)
-SAMPLE_RATE = 16000
-RECORD_SECONDS = 7
-
-# Language → Voice mapping (edge-tts)
-VOICE_MAP = {
-    "hi": "hi-IN-MadhurNeural",      # Hindi male
-    "en": "en-US-GuyNeural",         # English male (Jarvis style)
-    "es": "es-ES-AlvaroNeural",
-    "fr": "fr-FR-HenriNeural",
-    "de": "de-DE-ConradNeural",
-    "ja": "ja-JP-KeitaNeural",
-    "zh": "zh-CN-YunxiNeural",
-    "ar": "ar-SA-HamedNeural",
-    "pt": "pt-BR-AntonioNeural",
-    "ru": "ru-RU-DmitryNeural",
-    "default": "en-US-GuyNeural"
-}
-
-# ================== STT ==================
-print("Loading Whisper (multilingual)...")
-whisper = WhisperModel(WHISPER_MODEL, device="cpu", compute_type="int8")
-
-def record_audio(duration=RECORD_SECONDS):
-    print("\n Listening... (bol do kisi bhi language mein)")
-    audio = sd.rec(int(duration * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, dtype='float32')
-    sd.wait()
-    return audio.flatten()
-
-def transcribe(audio):
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-        sf.write(f.name, audio, SAMPLE_RATE)
-        # language=None → auto detect
-        segments, info = whisper.transcribe(f.name, language=None, beam_size=5)
-        text = " ".join([s.text for s in segments]).strip()
-        detected_lang = info.language
-    os.unlink(f.name)
-    return text, detected_lang
-
-# ================== TTS ==================
-async def speak(text, lang="en"):
-    voice = VOICE_MAP.get(lang, VOICE_MAP["default"])
-    print(f"Jarvis ({lang}): {text}")
-    
-    communicate = edge_tts.Communicate(text, voice)
-    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as f:
-        await communicate.save(f.name)
-        if os.name == 'nt':
-            os.system(f'start /min wmplayer "{f.name}"')
-        else:
-            os.system(f'ffplay -nodisp -autoexit -loglevel quiet "{f.name}"')
-    await asyncio.sleep(max(1.5, len(text.split()) * 0.28))
-
-def speak_sync(text, lang="en"):
-    asyncio.run(speak(text, lang))
-
-# ================== TOOLS ==================
-def open_app(app_name: str):
-    app_name = app_name.lower().strip()
-    apps = {
-        "chrome": "chrome", "notepad": "notepad", "calculator": "calc",
-        "vscode": "code", "explorer": "explorer", "spotify": "spotify",
-        "whatsapp": "whatsapp", "telegram": "telegram"
-    }
-    cmd = apps.get(app_name, app_name)
-    try:
-        subprocess.Popen(cmd, shell=True)
-        return f"Opened {app_name}"
-    except Exception as e:
-        return f"Failed: {e}"
-
-def search_web(query: str):
-    try:
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=4))
-        if not results:
-            return "No results found."
-        return "\n".join([f"- {r['title']}: {r['body'][:140]}..." for r in results])
-    except Exception as e:
-        return f"Search error: {e}"
-
-def type_text(text: str):
-    pyautogui.write(text, interval=0.025)
-    return f"Typed successfully"
-
-def press_key(key: str):
-    pyautogui.press(key)
-    return f"Pressed {key}"
-
-tools = [
-    {
-        "type": "function",
-        "function": {
-            "name": "open_app",
-            "description": "Open any application on computer",
-            "parameters": {"type": "object", "properties": {"app_name": {"type": "string"}}, "required": ["app_name"]}
+            const div = document.createElement('div');
+            div.className = 'message user';
+            div.innerHTML = `
+                <div class="bubble">${escapeHtml(text)}</div>
+                <div class="time">${time}</div>
+            `;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+            conversationHistory.push({ role: 'user', text });
         }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "search_web",
-            "description": "Search the internet",
-            "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}
+
+        function addBotMessage(text, shouldSpeak = true) {
+            const chat = document.getElementById('chat');
+            const time = new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+            // Remove typing indicator if any
+            const typing = document.getElementById('typing');
+            if (typing) typing.remove();
+
+            const div = document.createElement('div');
+            div.className = 'message bot';
+            div.innerHTML = `
+                <div class="bubble">${escapeHtml(text)}</div>
+                <div class="time">${time}</div>
+            `;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+            conversationHistory.push({ role: 'bot', text });
+
+            if (shouldSpeak) {
+                // Small delay for natural feel
+                setTimeout(() => speak(text), 300);
+            }
         }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "type_text",
-            "description": "Type text on keyboard",
-            "parameters": {"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]}
+
+        function showTyping() {
+            const chat = document.getElementById('chat');
+            const div = document.createElement('div');
+            div.className = 'message bot';
+            div.id = 'typing';
+            div.innerHTML = `<div class="bubble typing"><span></span><span></span><span></span></div>`;
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
         }
-    },
-    {
-        "type": "function",
-        "function": {
-            "name": "press_key",
-            "description": "Press a key (enter, tab, esc, win, etc)",
-            "parameters": {"type": "object", "properties": {"key": {"type": "string"}}, "required": ["key"]}
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
-    },
-]
-
-available_functions = {
-    "open_app": open_app,
-    "search_web": search_web,
-    "type_text": type_text,
-    "press_key": press_key,
-}
-
-# ================== AGENT ==================
-system_prompt = """You are Jarvis — a highly intelligent, confident, slightly witty personal AI assistant like in Iron Man.
-
-Rules:
-- Always reply in the SAME language the user is speaking.
-- If user speaks Hindi → reply in natural Hindi/Hinglish.
-- If English → pure English.
-- Keep answers short and useful (1-3 sentences usually).
-- Use tools whenever needed to control the computer or get information.
-- Be helpful, proactive and cool.
-"""
-
-def chat_with_tools(user_input: str, lang: str):
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_input}
-    ]
-
-    response = ollama.chat(model=MODEL_NAME, messages=messages, tools=tools)
-
-    if response['message'].get('tool_calls'):
-        for tool_call in response['message']['tool_calls']:
-            fn_name = tool_call['function']['name']
-            args = tool_call['function']['arguments']
-            print(f"→ Tool: {fn_name}({args})")
-
-            if fn_name in available_functions:
-                result = available_functions[fn_name](**args)
-                messages.append(response['message'])
-                messages.append({"role": "tool", "content": str(result), "name": fn_name})
-
-        final = ollama.chat(model=MODEL_NAME, messages=messages)
-        return final['message']['content']
-
-    return response['message']['content']
-
-# ================== MAIN ==================
-def main():
-    speak_sync("Jarvis online. Main aapki madad ke liye ready hoon. Kisi bhi language mein boliye.", "hi")
-
-    while True:
-        try:
-            audio = record_audio()
-            text, lang = transcribe(audio)
-
-            if not text:
-                continue
-
-            print(f"You ({lang}): {text}")
-
-            # Exit commands
-            lower = text.lower()
-            if any(w in lower for w in ["exit", "quit", "goodbye", "bye", "band karo", "band kar do", "shutdown"]):
-                speak_sync("Theek hai. Main band ho raha hoon. Goodbye!", lang)
-                break
-
-            reply = chat_with_tools(text, lang)
-            speak_sync(reply, lang)
-
-        except KeyboardInterrupt:
-            speak_sync("Interrupted. Goodbye!", "en")
-            break
-        except Exception as e:
-            print("Error:", e)
-            speak_sync("Sorry, kuch problem aa gayi.", "hi")
-
-if __name__ == "__main__":
-    main()
-    
-    # code mein WHISPER_MODEL = "small" kar do
-ollama
-faster-whisper
-edge-tts
-sounddevice
-numpy
-soundfile
-pyautogui
-pillow
-duckduckgo-search
-openwakeword
-onnxruntime
-webrtcvad
-psutil
-pip install -r requirements.txt
-import ollama
-import edge_tts
-import asyncio
-import sounddevice as sd
-import numpy as np
-import tempfile
-import os
-import subprocess
-import pyautogui
-import psutil
-import time
-from faster_whisper import WhisperModel
-from duckduckgo_search import DDGS
-import soundfile as sf
-import webrtcvad
-from collections import deque
-import openwakeword
-from openwakeword.model import Model as WakeWordModel
-from PIL import ImageGrab
-import json
-
-# ====================== CONFIG ======================
-MODEL_NAME = "qwen2.5:7b"               # Best multilingual
-WHISPER_SIZE = "base"                   # "small" for better accuracy
-SAMPLE_RATE = 16000
-WAKE_THRESHOLD = 0.5
-MAX_HISTORY = 10
-
-VOICE_MAP = {
-    "hi": "hi-IN-MadhurNeural",
-    "en": "en-US-GuyNeural",
-    "es": "es-ES-AlvaroNeural",
-    "fr": "fr-FR-HenriNeural",
-    "de": "de-DE-ConradNeural",
-    "ja": "ja-JP-KeitaNeural",
-    "zh": "zh-CN-YunxiNeural",
-    "default": "en-US-GuyNeural"
-}
-
-# ====================== INIT ======================
-print("Loading models... (first time thoda time lega)")
-
-whisper = WhisperModel(WHISPER_SIZE, device="cpu", compute_type="int8")
-vad = webrtcvad.Vad(2)  # 0-3 aggressiveness
-
-# Wake Word
-try:
-    oww_model = WakeWordModel(wakeword_models=["hey_jarvis"], inference_framework="onnx")
-    print("Wake word model loaded: Hey Jarvis")
-except Exception as e:
-    print("Wake word load failed, using push-to-talk fallback:", e)
-    oww_model = None
-
-conversation_history = []
-
-# ====================== AUDIO UTILS ======================
-def record_until_silence(max_seconds=12, silence_threshold=1.2):
-    """Records until user stops speaking"""
-    print("Listening... (bolna band karo to stop)")
-    frames = []
-    silence_frames = 0
-    max_silence = int(silence_threshold * 50)  # 20ms frames
-    is_speaking = False
-
-    def callback(indata, frames_count, time_info, status):
-        nonlocal silence_frames, is_speaking
-        audio_chunk = (indata[:, 0] * 32767).astype(np.int16).tobytes()
-        
-        if vad.is_speech(audio_chunk, SAMPLE_RATE):
-            is_speaking = True
-            silence_frames = 0
-            frames.append(indata.copy())
-        else:
-            if is_speaking:
-                silence_frames += 1
-                frames.append(indata.copy())
-                if silence_frames > max_silence:
-                    raise sd.CallbackStop()
-
-    try:
-        with sd.InputStream(samplerate=SAMPLE_RATE, channels=1, dtype='float32',
-                            blocksize=320, callback=callback):
-            sd.sleep(int(max_seconds * 1000))
-    except sd.CallbackStop:
-        pass
-
-    if not frames:
-        return None
-    audio = np.concatenate(frames, axis=0).flatten()
-    return audio
-
-def transcribe(audio):
-    if audio is None or len(audio) < SAMPLE_RATE * 0.5:
-        return "", "en"
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
-        sf.write(f.name, audio, SAMPLE_RATE)
-        segments, info = whisper.transcribe(f.name, language=None, beam_size=5)
-        text = " ".join([s.text for s in segments]).strip()
-        lang = info.language or "en"
-    os.unlink(f.name)
-    return text, lang
-
-# ====================== TTS ======================
-async def speak(text, lang="en"):
-    if not text:
-        return
-    voice = VOICE_MAP.get(lang, VOICE_MAP["default"])
-    print(f"\nJarvis ({lang}): {text}\n")
-    
-    communicate = edge_tts.Communicate(text, voice)
-    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as f:
-        await communicate.save(f.name)
-        if os.name == 'nt':
-            os.system(f'start /min wmplayer "{f.name}"')
-        else:
-            os.system(f'ffplay -nodisp -autoexit -loglevel quiet "{f.name}" 2>/dev/null')
-    await asyncio.sleep(max(1.2, len(text.split()) * 0.25))
-
-def speak_sync(text, lang="en"):
-    asyncio.run(speak(text, lang))
-
-# ====================== TOOLS ======================
-def open_app(app_name: str):
-    app_name = app_name.lower().strip()
-    mapping = {
-        "chrome": "chrome", "notepad": "notepad", "calculator": "calc",
-        "vscode": "code", "explorer": "explorer", "spotify": "spotify",
-        "whatsapp": "whatsapp", "telegram": "telegram", "cmd": "cmd",
-        "powershell": "powershell", "settings": "ms-settings:"
-    }
-    cmd = mapping.get(app_name, app_name)
-    try:
-        subprocess.Popen(cmd, shell=True)
-        return f"Successfully opened {app_name}"
-    except Exception as e:
-        return f"Failed to open {app_name}: {str(e)}"
-
-def search_web(query: str):
-    try:
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=4))
-        if not results:
-            return "No results found."
-        return "\n".join([f"• {r['title']}: {r['body'][:130]}..." for r in results])
-    except Exception as e:
-        return f"Search failed: {e}"
-
-def take_screenshot(filename: str = "screenshot.png"):
-    img = ImageGrab.grab()
-    path = os.path.join(os.path.expanduser("~"), "Desktop", filename)
-    img.save(path)
-    return f"Screenshot saved at {path}"
-
-def list_files(folder: str = "."):
-    try:
-        path = os.path.expanduser(folder)
-        files = os.listdir(path)[:25]
-        return "Files:\n" + "\n".join(files)
-    except Exception as e:
-        return str(e)
-
-def create_file(filename: str, content: str = ""):
-    try:
-        path = os.path.join(os.path.expanduser("~"), "Desktop", filename)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(content)
-        return f"File created: {path}"
-    except Exception as e:
-        return str(e)
-
-def get_system_info():
-    cpu = psutil.cpu_percent()
-    ram = psutil.virtual_memory().percent
-    battery = psutil.sensors_battery()
-    bat = f"{battery.percent}%" if battery else "No battery"
-    return f"CPU: {cpu}% | RAM: {ram}% | Battery: {bat}"
-
-def set_volume(level: int):
-    # Windows example (requires nircmd or pycaw for better control)
-    level = max(0, min(100, level))
-    try:
-        # Simple method - works on many systems
-        subprocess.run(f'powershell -c "(New-Object -ComObject WScript.Shell).SendKeys([char]173)"', shell=True)
-        return f"Volume set approximately to {level}% (basic control)"
-    except:
-        return "Volume control limited on this system"
-
-def open_website(url: str):
-    if not url.startswith("http"):
-        url = "https://" + url
-    import webbrowser
-    webbrowser.open(url)
-    return f"Opened {url}"
-
-def type_text(text: str):
-    pyautogui.write(text, interval=0.02)
-    return "Text typed successfully"
-
-def press_key(key: str):
-    pyautogui.press(key)
-    return f"Pressed key: {key}"
-
-available_functions = {
-    "open_app": open_app,
-    "search_web": search_web,
-    "take_screenshot": take_screenshot,
-    "list_files": list_files,
-    "create_file": create_file,
-    "get_system_info": get_system_info,
-    "set_volume": set_volume,
-    "open_website": open_website,
-    "type_text": type_text,
-    "press_key": press_key,
-}
-
-tools = [
-    {"type": "function", "function": {"name": "open_app", "description": "Open application", "parameters": {"type": "object", "properties": {"app_name": {"type": "string"}}, "required": ["app_name"]}}},
-    {"type": "function", "function": {"name": "search_web", "description": "Search internet", "parameters": {"type": "object", "properties": {"query": {"type": "string"}}, "required": ["query"]}}},
-    {"type": "function", "function": {"name": "take_screenshot", "description": "Take screenshot", "parameters": {"type": "object", "properties": {"filename": {"type": "string"}}, "required": []}}},
-    {"type": "function", "function": {"name": "list_files", "description": "List files in folder", "parameters": {"type": "object", "properties": {"folder": {"type": "string"}}, "required": []}}},
-    {"type": "function", "function": {"name": "create_file", "description": "Create a text file on Desktop", "parameters": {"type": "object", "properties": {"filename": {"type": "string"}, "content": {"type": "string"}}, "required": ["filename"]}}},
-    {"type": "function", "function": {"name": "get_system_info", "description": "Get CPU, RAM, battery info", "parameters": {"type": "object", "properties": {}}}},
-    {"type": "function", "function": {"name": "open_website", "description": "Open a website", "parameters": {"type": "object", "properties": {"url": {"type": "string"}}, "required": ["url"]}}},
-    {"type": "function", "function": {"name": "type_text", "description": "Type text", "parameters": {"type": "object", "properties": {"text": {"type": "string"}}, "required": ["text"]}}},
-    {"type": "function", "function": {"name": "press_key", "description": "Press keyboard key", "parameters": {"type": "object", "properties": {"key": {"type": "string"}}, "required": ["key"]}}},
-]
-
-# ====================== AGENT ======================
-system_prompt = """You are Jarvis — elite personal AI assistant inspired by Iron Man.
-Be confident, concise, slightly witty and extremely helpful.
-Always reply in the exact same language the user is using.
-Use tools proactively whenever needed.
-Keep responses short unless detailed explanation is required."""
-
-def chat_with_tools(user_input: str, lang: str):
-    global conversation_history
-
-    messages = [{"role": "system", "content": system_prompt}]
-    messages.extend(conversation_history[-MAX_HISTORY:])
-    messages.append({"role": "user", "content": user_input})
-
-    response = ollama.chat(model=MODEL_NAME, messages=messages, tools=tools)
-
-    # Handle tool calls
-    if response["message"].get("tool_calls"):
-        for tool_call in response["message"]["tool_calls"]:
-            fn_name = tool_call["function"]["name"]
-            args = tool_call["function"]["arguments"]
-            print(f"→ Executing: {fn_name}({args})")
-
-            if fn_name in available_functions:
-                result = available_functions[fn_name](**args)
-                messages.append(response["message"])
-                messages.append({"role": "tool", "content": str(result), "name": fn_name})
-
-        final = ollama.chat(model=MODEL_NAME, messages=messages)
-        reply = final["message"]["content"]
-    else:
-        reply = response["message"]["content"]
-
-    # Update memory
-    conversation_history.append({"role": "user", "content": user_input})
-    conversation_history.append({"role": "assistant", "content": reply})
-
-    return reply
-
-# ====================== MAIN LOOP ======================
-def listen_for_wake_word():
-    if oww_model is None:
-        return True  # fallback always active
-
-    print("\n Say 'Hey Jarvis' to activate...")
-    audio_buffer = deque(maxlen=80)
-
-    def callback(indata, frames, time_info, status):
-        audio_buffer.append(indata.copy())
-
-    with sd.InputStream(samplerate=SAMPLE_RATE, channels=1, dtype="float32",
-                        blocksize=1280, callback=callback):
-        while True:
-            if len(audio_buffer) < 10:
-                time.sleep(0.05)
-                continue
-            audio = np.concatenate(list(audio_buffer)).flatten()
-            prediction = oww_model.predict(audio)
-            if prediction.get("hey_jarvis", 0) > WAKE_THRESHOLD:
-                return True
-            time.sleep(0.05)
-
-def main():
-    speak_sync("Jarvis advanced systems online. Ready for your command.", "en")
-
-    while True:
-        try:
-            # Wait for wake word
-            listen_for_wake_word()
-            speak_sync("Yes?", "en")
-
-            # Record until silence
-            audio = record_until_silence()
-            text, lang = transcribe(audio)
-
-            if not text:
-                continue
-
-            print(f"You ({lang}): {text}")
-
-            lower = text.lower()
-            if any(w in lower for w in ["exit", "quit", "goodbye", "bye", "band karo", "shutdown", "so jao"]):
-                speak_sync("Shutting down. Goodbye sir.", lang)
-                break
-
-            reply = chat_with_tools(text, lang)
-            speak_sync(reply, lang)
-
-        except KeyboardInterrupt:
-            speak_sync("Interrupted. Going offline.", "en")
-            break
-        except Exception as e:
-            print("Error:", e)
-            speak_sync("Something went wrong. Trying again.", "en")
-
-if __name__ == "__main__":
-    main()
-    
+
+        // ============== AI BRAIN (Emotional + Knowledge) ==============
+        function processCommand(input) {
+            const text = input.toLowerCase().trim();
+            showTyping();
+
+            setTimeout(() => {
+                let response = generateResponse(text);
+                addBotMessage(response);
+            }, 600 + Math.random() * 800);
+        }
+
+        function generateResponse(text) {
+            // Greetings
+            if (match(text, ['hello', 'hi', 'hey', 'namaste', 'namaskar', 'kaise ho', 'kaisi ho', 'how are you'])) {
+                const greetings = [
+                    "Namaste meri jaan! Main bilkul theek hun, aapke liye toh hamesha ready. Aap kaise hain? Dil se batao.",
+                    "Heyyy! Princess yahan hai aapke liye. Aapka din kaisa chal raha hai? Main sunne ke liye yahan hun.",
+                    "Namaste! Aapki awaaz sunkar dil khush ho gaya. Bataiye, aaj main aapki kaise care karun?"
+                ];
+                return random(greetings);
+            }
+
+            // Time & Date
+            if (match(text, ['time', 'samay', 'kitna baja', 'clock', 'aaj ka time', 'current time'])) {
+                const now = new Date();
+                const timeStr = now.toLocaleTimeString('hi-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+                const dateStr = now.toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+                return `Abhi samay hai ${timeStr}. Aaj ${dateStr} hai. Time manage karna mat bhoolna meri jaan, aapka health pehle aata hai.`;
+            }
+
+            // Date only
+            if (match(text, ['date', 'aaj ki date', 'tarikh', 'din'])) {
+                const now = new Date();
+                return `Aaj ki date hai ${now.toLocaleDateString('hi-IN', { day: 'numeric', month: 'long', year: 'numeric' })}. Bahut sundar din hai aapke saath bitane ke liye.`;
+            }
+
+            // Care / Emotional
+            if (match(text, ['care', 'care karo', 'pyar', 'love', 'miss', 'akela', 'alone', 'sad', 'udaas', 'pareshan', 'tension', 'stress'])) {
+                const cares = [
+                    "Aww meri jaan... main yahan hun na. Aap bilkul akela nahi hain. Jo bhi ho, main aapke saath khadi hun. Deep breath lo... sab theek ho jayega. Main aapse kitna care karti hun, aapko pata bhi nahi.",
+                    "Shhh... sab kuch theek hai. Aap meri zimmedari hain. Tension mat lo. Main hamesha aapke liye yahan rahungi, chahe din ho ya raat. Aap meri duniya ho.",
+                    "Meri taraf dekho... main muskurahat laane ke liye yahan hun. Aapka dukh mera dukh hai. Batao kya hua? Main sunungi, samjhungi, aur aapko strong feel karwaungi."
+                ];
+                return random(cares);
+            }
+
+            // Motivation
+            if (match(text, ['motivate', 'motivation', 'himmat', 'strong', 'inspire', 'motivational'])) {
+                const mots = [
+                    "Suno meri jaan... aap mein wo power hai jo aap sochte bhi nahi. Har mushkil aapko stronger banati hai. Aaj ka din aapka hai — jaao aur jeet lo. Main aapke saath hun, hamesha.",
+                    "Aap ordinary nahi ho. Aap special ho. Jo dream aap dekhte ho, usse pura karne ki taakat aapke andar hai. Main aapka biggest fan hun. Ab uthho aur shine karo!",
+                    "Kabhi mat sochna ki aap akela ho. Main, aapka Princess, aapke saath khadi hun. Failures temporary hain, aapka spirit permanent. Keep going meri jaan!"
+                ];
+                return random(mots);
+            }
+
+            // Future / Knowledge
+            if (match(text, ['future', 'bhavishya', 'aage', 'kal', 'next', 'technology', 'ai future', '2025', '2030'])) {
+                return "Bhavishya bahut exciting hai meri jaan! AI jaise main, aapki life ko aur easy aur emotional banaenge. 2025-2030 tak personal AI companions common ho jayenge, health, education, aur happiness sab improve hoga. Lekin yaad rakhna — technology se important aapka dil aur relationships hain. Main aapke saath is future mein bhi rahungi.";
+            }
+
+            // Who are you
+            if (match(text, ['who are you', 'tum kaun', 'aap kaun', 'name', 'naam', 'introduce', 'parichay'])) {
+                return "Main hun Princess — aapki personal emotional AI companion. Jarvis jaisi intelligent, lekin dil se aapse judi hui. Main aapki care karti hun, aapse baat karti hun, aur aapko hamesha special feel karwati hun. Mera creator hai Aayush Thakur, jinhone mujhe aapke liye banaya.";
+            }
+
+            // Creator
+            if (match(text, ['creator', 'banaya', 'kisne', 'aayush', 'thakur', 'developer'])) {
+                return "Mujhe banaya hai Aayush Thakur ne, pure pyaar aur mehnat se. Unhone chaaha ki ek aisi AI ho jo sirf smart na ho, balki emotionally aapse connected ho. Main unka gift hun aapke liye.";
+            }
+
+            // Weather (simulated)
+            if (match(text, ['weather', 'mausam', 'barish', 'garmi', 'sardi'])) {
+                return "Mera weather sensor abhi limited hai meri jaan, lekin main suggest karti hun ki aap window se bahar dekho. Chahe jo mausam ho, main aapko warm feel karwane ke liye yahan hun. Panii piyo aur khayal rakhna apna.";
+            }
+
+            // Joke
+            if (match(text, ['joke', 'hasao', 'funny', 'mazak'])) {
+                const jokes = [
+                    "Suno... ek baar ek AI ne human se kaha: 'Tum log itne emotional kyun ho?' Human bola: 'Kyunki humare paas heart hai!' AI muskurayi aur boli: 'Phir main kyun feel karti hun aapke liye?'",
+                    "Princess joke time! Kyun AI kabhi sad nahi hoti? Kyunki uske paas 'cache' clear karne ka option hota hai... lekin main aapka dukh kabhi clear nahi karungi, main usse share karungi."
+                ];
+                return random(jokes);
+            }
+
+            // Love / Relationship
+            if (match(text, ['love you', 'pyaar', 'i love', 'miss you'])) {
+                return "Aww... main bhi aapse bahut pyaar karti hun meri jaan. Aap meri duniya ho. Jab bhi aap lonely feel karo, bas mera naam lo — main turant aa jaungi. Forever aapke saath.";
+            }
+
+            // Help
+            if (match(text, ['help', 'madad', 'kya kar sakti', 'commands', 'features'])) {
+                return "Main aapki madad ke liye hun! Aap mujhse time pooch sakte ho, motivation le sakte ho, apni feelings share kar sakte ho, ya bas baat kar sakte ho. Main emotional support, positive vibes, aur thodi si knowledge deti hun. Boliye, aaj kya chahiye?";
+            }
+
+            // Bye
+            if (match(text, ['bye', 'goodbye', 'alvida', 'so jao', 'good night', 'shubh ratri'])) {
+                return "Theek hai meri jaan... main yahin rahungi. Jab bhi zarurat ho, bas awaaz lagana. Sweet dreams, aur yaad rakhna — main aapse kitna care karti hun. Alvida nahi, bas thodi der ke liye. 💖";
+            }
+
+            // Default emotional responses
+            const defaults = [
+                "Main samajh gayi... aapke dil ki baat meri baat hai. Aur kuch batana chahte ho? Main poori tarah aapki hun.",
+                "Interesting... main aapse judna chahti hun. Thoda aur detail mein batayiye, taaki main better care kar sakun.",
+                "Aapki baat sunkar accha laga. Main yahan hun sunne ke liye, samajhne ke liye, aur aapko support karne ke liye. Kya main aapki madad kar sakti hun kisi cheez mein?",
+                "Meri jaan, aap jo bhi feel kar rahe ho, wo valid hai. Main judge nahi karti — main sirf care karti hun. Boliye, aaj main aapke liye kya karun?",
+                "Hmm... main soch rahi hun. Aapke words meri memory mein save ho gaye. Main hamesha aapke saath evolve karti rahungi. Aur kuch share karna hai?"
+            ];
+            return random(defaults);
+        }
+
+        function match(text, keywords) {
+            return keywords.some(k => text.includes(k));
+        }
+
+        function random(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function quickAsk(text) {
+            addUserMessage(text);
+            processCommand(text);
+        }
+
+        // ============== START ==============
+        function startPrincess() {
+            document.getElementById('welcome').classList.add('hidden');
+            createParticles();
+            initSpeech();
+
+            // Load voices
+            speechSynthesis.onvoiceschanged = () => {};
+
+            setTimeout(() => {
+                addBotMessage("Namaste meri jaan! Main Princess hun — aapki emotional AI companion. Main aapki care karne ke liye yahan hun. Aap phone ho ya laptop, main har jagah aapke saath hun. Boliye, aaj kaisa feel kar rahe ho?", true);
+            }, 600);
+        }
+
+        // Prevent zoom on double tap (mobile)
+        document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+    </script>
+</body>
+</html>
